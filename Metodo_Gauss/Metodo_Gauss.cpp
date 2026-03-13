@@ -26,6 +26,7 @@ public:
             matriz_gaussiana_[i].resize(orden_matriz_ + 1);
         }
     }
+
     void solicitar_valores(void)
     {
         for (int i = 0; i < orden_matriz_; i++) ///incognitas ecuaciones
@@ -48,6 +49,7 @@ public:
             terminos_independientes_[i] = valor;
         }
     }
+
     void unir_matriz_con_terminos_independientes(void)
     {
         for (int i = 0; i < matriz_gaussiana_.size(); i++)
@@ -65,6 +67,7 @@ public:
             }
         }
     }
+
     bool matriz_escalonada(void) const
     {
         for (int i = 1; i < matriz_gaussiana_.size(); i++)
@@ -80,22 +83,37 @@ public:
         }
         return true;
     }
+
     int calcular_fila_referencia(int fila_) const
     {
         int fila_referrencia = 0;
-        int n_ceros = 0;
+        int n_ceros_fila_actual = 0;
         for (int columna = 0; columna < matriz_gaussiana_[fila_].size(); columna++)
         {
             //para la fila dada, calculo cuantos ceros tiene la fila. Si me encuentro un numero que no es 0, paro el bucle.
-            if (matriz_gaussiana_[fila_][columna] == 0) n_ceros++;
+            if (matriz_gaussiana_[fila_][columna] == 0) n_ceros_fila_actual++;
             else if (matriz_gaussiana_[fila_][columna] != 0) break;
         }
-        if (n_ceros != 0)
+        for (int i = fila_ - 1; i >= 0; i--)
         {
-            fila_referrencia = fila_ - n_ceros;
+            int n_ceros_fila_i = 0;
+            if (not(fila_no_ok(i)))
+            {
+                for (int j = 0; j < matriz_gaussiana_[i].size(); j++)
+                {
+                    if (matriz_gaussiana_[i][j] == 0) n_ceros_fila_i++;
+                    else if (matriz_gaussiana_[i][j] != 0) break;
+                }
+                if (n_ceros_fila_i == n_ceros_fila_actual)
+                {
+                    fila_referrencia = i;
+                    break;
+                }
+            }
         }
         return fila_referrencia;
     }
+
     bool fila_no_ok(int fila_) const
     {
         int n_ceros = 0;
@@ -109,6 +127,7 @@ public:
         if (n_ceros >= fila_) return false;
         else return true;
     }
+
     void pintar_matriz(void) const
     {
         cout << endl << endl;
@@ -122,6 +141,7 @@ public:
             cout << endl;
         }
     }
+
     void escalonar_matriz_gaussiana()
     {
         //mientras la matriz no este escalonada, ejecutamos los bucles hasta escalonarla
@@ -156,6 +176,7 @@ public:
             pintar_matriz();
         }
     }
+
     void resolver_sistema(void)
     {
         
