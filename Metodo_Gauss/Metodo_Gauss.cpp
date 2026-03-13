@@ -73,6 +73,7 @@ public:
             for (int j = 0; j < matriz_gaussiana_[i].size(); j++)
             {
                 if (matriz_gaussiana_[i][j] == 0) n_ceros_en_fila++;
+                else if (matriz_gaussiana_[i][j] != 0) break;
             }
             if (n_ceros_en_fila >= i) continue;
             else return false;
@@ -101,15 +102,8 @@ public:
         //cuento los ceros que hay en la fila "fila".
         for (int columna = 0; columna < matriz_gaussiana_[fila_].size(); columna++)
         {
-            if (matriz_gaussiana_[fila_][columna] == 0 and matriz_gaussiana_[fila_][columna + 1] != 0)
-            {
-                n_ceros++;
-                break;
-            }
-            else if (matriz_gaussiana_[fila_][columna] == 0 and matriz_gaussiana_[fila_][columna + 1] == 0)
-            {
-                n_ceros++;
-            }
+            if (matriz_gaussiana_[fila_][columna] == 0) n_ceros++;
+            else if (matriz_gaussiana_[fila_][columna] != 0) break;
         }
         //si el numero de ceros en la fila "fila" es igual o mayor que el valor de la fila, devolvemos false, ya que la fila esta OK 
         if (n_ceros >= fila_) return false;
@@ -170,7 +164,7 @@ public:
 
 int main()
 {
-    int orden_sistema = 3;
+    int orden_sistema = 4;
     Gauss sistema_ecuaciones(orden_sistema);
     sistema_ecuaciones.solicitar_valores();
     sistema_ecuaciones.unir_matriz_con_terminos_independientes();
