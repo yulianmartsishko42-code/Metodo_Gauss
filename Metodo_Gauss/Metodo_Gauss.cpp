@@ -225,9 +225,7 @@ int main()
     Gauss sistema_ecuaciones(orden_sistema);
     sistema_ecuaciones.solicitar_valores();
     sistema_ecuaciones.unir_matriz_con_terminos_independientes();
-    auto antes = chrono::system_clock::now();
     sistema_ecuaciones.escalonar_matriz_gaussiana();
     sistema_ecuaciones.resolver_sistema();
-    auto despues = chrono::system_clock::now();
     cout << sistema_ecuaciones;
 }
