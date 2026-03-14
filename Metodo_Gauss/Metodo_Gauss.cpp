@@ -9,6 +9,7 @@ private:
     vector<vector<int>> matriz_;
     vector<int> terminos_independientes_;
     vector<vector<int>> matriz_gaussiana_;
+    vector<float> solucion_;
     int orden_matriz_;
 
 public:
@@ -25,6 +26,7 @@ public:
         {
             matriz_gaussiana_[i].resize(orden_matriz_ + 1);
         }
+        solucion_.resize(orden_matriz_);
     }
 
     void solicitar_valores(void)
@@ -136,7 +138,7 @@ public:
             cout << setw(5);
             for (const auto& j : i)
             {
-                cout << j << setw(5);
+                cout << j << setw(10);
             }
             cout << endl;
         }
@@ -144,6 +146,7 @@ public:
 
     void escalonar_matriz_gaussiana()
     {
+        pintar_matriz();
         //mientras la matriz no este escalonada, ejecutamos los bucles hasta escalonarla
         while (not(matriz_escalonada()))
         {
@@ -177,17 +180,54 @@ public:
         }
     }
 
-    void resolver_sistema(void)
+    bool resolver_sistema(void)
     {
-        
+        for (int i = matriz_gaussiana_.size() - 1; i >= 0; i--) //empiezo por la ultima fila
+        {
+            float coeficiente_incognita = 0.0;
+            for (int j = 0; j < matriz_gaussiana_[i].size() - 1; j++) //para calcular el coeficiente incognita de una fila "i" busco sin tener en cuenta el termino independiente
+            {
+                if (matriz_gaussiana_[i][j] != 0)
+                {
+                    coeficiente_incognita = static_cast<float>(matriz_gaussiana_[i][j]);
+                    break;
+                }
+            }
+            if (i == matriz_gaussiana_.size() - 1 and coeficiente_incognita != 0) solucion_[i] = static_cast<float>(matriz_gaussiana_[i][matriz_gaussiana_[i].size() - 1] / coeficiente_incognita);
+            else if (i == matriz_gaussiana_.size() - 1 and coeficiente_incognita == 0) return false;
+            else if (i < matriz_gaussiana_.size() - 1)
+            {
+                float numerador = static_cast<float>(matriz_gaussiana_[i][matriz_gaussiana_[i].size() - 1]);
+                for (int j = 0; j < (matriz_gaussiana_.size() - 1 - i); j++)
+                {
+                    numerador -= static_cast<float>(matriz_gaussiana_[i][matriz_gaussiana_[i].size() - 2 - j]) * solucion_[matriz_gaussiana_[i].size() - 2 - j];
+                }
+                solucion_[i] = numerador / coeficiente_incognita;
+            }
+        }
+    }
+
+    friend ostream& operator<<(ostream& os, Gauss& gauss)
+    {
+        os << endl << endl << "SOLUCIONES AL SISTEMA DE ECUACIONES:";
+        for (int i = 0; i < gauss.orden_matriz_; i++)
+        {
+            os << endl << "Solucion incognita " << i + 1 << ": " << gauss.solucion_[i];
+        }
+        os << endl;
+        return os;
     }
 };
 
 int main()
 {
-    int orden_sistema = 4;
+    int orden_sistema = 3;
     Gauss sistema_ecuaciones(orden_sistema);
     sistema_ecuaciones.solicitar_valores();
     sistema_ecuaciones.unir_matriz_con_terminos_independientes();
+    auto antes = chrono::system_clock::now();
     sistema_ecuaciones.escalonar_matriz_gaussiana();
+    sistema_ecuaciones.resolver_sistema();
+    auto despues = chrono::system_clock::now();
+    cout << sistema_ecuaciones;
 }
