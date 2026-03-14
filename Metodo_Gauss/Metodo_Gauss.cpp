@@ -6,9 +6,9 @@ using namespace std;
 class Gauss
 {
 private:
-    vector<vector<int>> matriz_;
-    vector<int> terminos_independientes_;
-    vector<vector<int>> matriz_gaussiana_;
+    vector<vector<double>> matriz_;
+    vector<double> terminos_independientes_;
+    vector<vector<double>> matriz_gaussiana_;
     vector<float> solucion_;
     int orden_matriz_;
 
@@ -138,21 +138,51 @@ public:
             cout << setw(5);
             for (const auto& j : i)
             {
-                cout << j << setw(10);
+                cout << j << setw(15);
             }
             cout << endl;
+        }
+    }
+
+    void reordenar_filas(void)
+    {
+        vector<bool> filas_con_n_ceros_ok;
+        filas_con_n_ceros_ok.resize(orden_matriz_);
+        for (int i = 0; i < matriz_gaussiana_.size(); i++)
+        {
+            int n_ceros_fila = 0;
+            for (int j = 0; j < matriz_gaussiana_[i].size(); j++)
+            {
+                if (matriz_gaussiana_[i][j] == 0) n_ceros_fila++;
+                else if (matriz_gaussiana_[i][j] != 0) break;
+            }
+            if (i == n_ceros_fila)
+            {
+                filas_con_n_ceros_ok[i] = true;
+            }
+        }
+        for (int i = 0; i < filas_con_n_ceros_ok.size(); i++)
+        {
+            for (int j = i + 1; j <= filas_con_n_ceros_ok.size() - 1; j++)
+            {
+                if (filas_con_n_ceros_ok[i] == false and filas_con_n_ceros_ok[j] == false)
+                {
+                    swap(matriz_gaussiana_[i], matriz_gaussiana_[j]);
+                }
+            }
         }
     }
 
     void escalonar_matriz_gaussiana()
     {
         pintar_matriz();
+        reordenar_filas();
         //mientras la matriz no este escalonada, ejecutamos los bucles hasta escalonarla
         while (not(matriz_escalonada()))
         {
             for (int i = 1; i < matriz_gaussiana_.size(); i++)
             {
-                int factor1 = 0, factor2 = 0;
+                double factor1 = 0, factor2 = 0;
                 //si la fila "i" no esta con ceros, calculo factores y resuelvo la fila
                 if (fila_no_ok(i))
                 {
@@ -221,7 +251,7 @@ public:
 
 int main()
 {
-    int orden_sistema = 3;
+    int orden_sistema = 4;
     Gauss sistema_ecuaciones(orden_sistema);
     sistema_ecuaciones.solicitar_valores();
     sistema_ecuaciones.unir_matriz_con_terminos_independientes();
